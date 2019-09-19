@@ -219,16 +219,18 @@ vector<Node *> Node::get_neighbors(heuristic_t heuristic) {
 
 vector<Node *> Node::modified_expand(int depth, heuristic_t heuristic) {
   vector<Node *> temp;
-  queue<Node *> q;
-  q.push(this);
+  queue<Node *> q1, q2;
+  q1.push(this);
   Node *curr_node;
   while (depth--) {
-    curr_node = q.front();
-    q.pop();
-    for (Node *neighbor : curr_node->get_neighbors(heuristic)) {
-      // if (!explored.contains(neighbor)) {
-      q.push(neighbor);
-      temp.push_back(neighbor);
+    swap(q2, q1);
+    while (!q2.empty()) {
+      curr_node = q2.front();
+      q2.pop();
+      for (Node *neighbor : curr_node->get_neighbors(heuristic)) {
+        q1.push(neighbor);
+        temp.push_back(neighbor);
+      }
     }
   }
   ::nodes_generated += temp.size();
@@ -378,21 +380,23 @@ int main() {
           cout << "\t\tMaximum fringe length : " << ::max_fringe_length << "\n";
           cout << "\t\tLength of optimal path : " << solution.size() - 1
                << "\n";
-          /**** Uncomment to see the solution paths ****/
-          //
+          /**** (Un)comment to (not)see the solution paths ****/
+
+          // show_opt_path = true;
           // cout << "\t\tSolution steps :";
           // for (Node *node : solution) node->print();
-          //
-          /*********************************************/
+
+          /****************************************************/
           cout << "\n\n";
         }
       }
     }
   }
 
-  // Prompt user to make the code print the solution paths as well.
-  cout << "\nTo also see the actual optimal paths, user can uncomment the "
-          "corresponding section (as indicated in main()).\n\n";
+  if (!show_opt_path)
+    // Prompt user to make the code print the solution paths as well.
+    cout << "\nTo also see the actual optimal paths, user can uncomment the "
+            "corresponding section (as indicated in main()).\n\n";
 
   return 0;
 }
